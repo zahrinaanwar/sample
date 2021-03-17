@@ -2,21 +2,22 @@ package com.app.service.covid;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.app.entity.CovidCasesAreaEntity;
+import com.app.entity.CovidCasesDescEntity;
 import com.app.error.IDNotFoundException;
 import com.app.mapper.CovidAreaDescMapper;
 import com.app.mapper.CovidCasesAreaMapper;
-import com.app.repository.covid.CovidCasesDescRepository;
-import com.app.repository.covid.CovidCasesRepository;
-import com.app.entity.CovidCasesDescEntity;
-import com.app.entity.CovidCasesAreaEntity;
 import com.app.model.CovidCasesArea;
 import com.app.model.CovidCasesDesc;
+import com.app.repository.covid.CovidCasesDescRepository;
+import com.app.repository.covid.CovidCasesRepository;
 
 import fr.xebia.extras.selma.Selma;
 
@@ -78,18 +79,37 @@ public class CovidServiceImpl implements CovidService {
 	
 	// TODO: Related to Practical 4 (Add)
 	@Override
-	public List<CovidCasesArea> addCovid() {
-		log.info("addCovid started");
+	public CovidCasesDesc addCovid(String desc) {
+	log.info("addCovid started");
+	CovidCasesDesc covidCasesDesc = null;
+	CovidCasesDescEntity covidAreaDescEntity = new CovidCasesDescEntity();
 
-		return null;
+	 covidAreaDescEntity.setDescription(desc);
 
-	}
+	 CovidCasesDescEntity savedEntity = covidCasesDescRepository.save(covidAreaDescEntity);
+
+	 CovidAreaDescMapper mapper = Selma.builder(CovidAreaDescMapper.class).build();
+
+	 covidCasesDesc = mapper.asResource(savedEntity);
+	return covidCasesDesc;
+	 }
 
 	// TODO: Related to Practical 4 (Delete)
-	public List<CovidCasesArea> deleteCovid() {
+	public int deleteCovid(long id) {
+		
 		log.info("deleteCovid started");
+		
+		Optional<CovidCasesDescEntity> entityOptional = covidCasesDescRepository.findById(id);
 
-		return null;
+		log.info("Entity found == " + entityOptional.isPresent());
 
+		if (entityOptional.isPresent()) {
+			CovidCasesDescEntity covidAreaDescEntity = entityOptional.get();
+			covidCasesDescRepository.delete(covidAreaDescEntity);
+			return 1;
+		}
+	
+		return 0;
 	}
+
 }

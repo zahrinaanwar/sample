@@ -17,6 +17,5 @@ public class CovidCasesDescEntity {
 	@Id
 	@GeneratedValue
 	private Long id;
-
 	private String description;
 }
